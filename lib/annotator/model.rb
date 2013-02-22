@@ -23,10 +23,16 @@ module Annotator
     def parse
       @file = File.read(@filename).strip
       current_block = :before
+      previous_line = nil
       return @nodoc = true if @file.match(/^# Attributes\(nodoc\):$/i)
       @file.split("\n").each do |line|
         if line.match(/^#{Regexp.escape Attributes::HEADER} *$/)
+          @blocks[:before].pop
           current_block = :attributes
+          previous_line = :attributes
+          next
+        elsif previous_line == :attributes
+          previous_line = nil
           next
         end
         current_block = :after if current_block == :attributes && !line.match(Attributes::R_ATTRIBUTE_LINE)
