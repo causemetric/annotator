@@ -13,6 +13,7 @@ module Annotator
         provider = klass.new model, column
         return provider.text if provider.check
       end
+      nil
     end
 
   end
