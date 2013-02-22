@@ -41,7 +41,7 @@ module Annotator
           # We want to insert them after requires or any comment block at the beginning of the file
           unless line.match(/^require/) || line.match(/^#/)
             @blocks[:after] = @blocks[:before][i..-1]
-            @blocks[:before] = (i == 0) ? [] : @blocks[:before][0..(i-1)]
+            @blocks[:before] = (i == 0) ? [] : @blocks[:before][0..(i-1)] + []
             break
           end
         end
