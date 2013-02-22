@@ -5,7 +5,7 @@ module Annotator
     R_ATTRIBUTE = /^# \* (\w+) \[(.*?)\]( \- )?(.*)$/
     R_ATTRIBUTE_NEXT_LINE = /^#   (.*?)$/
     R_ATTRIBUTE_LINE = /(#{R_ATTRIBUTE})|(#{R_ATTRIBUTE_NEXT_LINE})/
-    HEADER = "## Attributes:"
+    HEADER = "# ## Attributes"
     MAX_CHARS_PER_LINE = 120
 
     def initialize(model, lines)
