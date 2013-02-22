@@ -11,7 +11,7 @@ module Annotator
 
     # Model class
     def klass
-      begin 
+      begin
         @filename.split(@base_path).last.split(/\.rb$/).first.camelize.constantize rescue nil
       rescue Exception
         nil
@@ -41,7 +41,7 @@ module Annotator
           # We want to insert them after requires or any comment block at the beginning of the file
           unless line.match(/^require/) || line.match(/^#/)
             @blocks[:after] = @blocks[:before][i..-1]
-            @blocks[:before] = (i == 0) ? [] : @blocks[:before][0..(i-1)] + [''] # add one additional separation line to make it cleaner
+            @blocks[:before] = (i == 0) ? [] : @blocks[:before][0..(i-1)]
             break
           end
         end

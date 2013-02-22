@@ -5,7 +5,7 @@ module Annotator
     R_ATTRIBUTE = /^# \* (\w+) \[(.*?)\]( \- )?(.*)$/
     R_ATTRIBUTE_NEXT_LINE = /^#   (.*?)$/
     R_ATTRIBUTE_LINE = /(#{R_ATTRIBUTE})|(#{R_ATTRIBUTE_NEXT_LINE})/
-    HEADER = "# Attributes:" 
+    HEADER = "## Attributes:"
     MAX_CHARS_PER_LINE = 120
 
     def initialize(model, lines)
@@ -18,7 +18,7 @@ module Annotator
 
     # Convert attributes array back to attributes lines representation to be put into file
     def lines
-      ret = [Attributes::HEADER]
+      ret = ['#',Attributes::HEADER, '#']
       # Sort by name, but id goes first
       @attrs.sort_by{|x| x[:name] == 'id' ? '_' : x[:name]}.each do |row|
         line = "# * #{row[:name]} [#{row[:type]}]#{row[:desc].to_s.empty? ? "" : " - #{row[:desc]}"}"
@@ -30,16 +30,16 @@ module Annotator
       ret
     end
 
-    # Update attribudes array to the current database state
+    # Update attributes array to the current database state
     def update!
       @model.columns.each do |column|
         if row = @attrs.find {|x| x[:name] == column.name}
           if row[:type] != type_str(column)
             puts "  M #{@model}##{column.name} [#{row[:type]} -> #{type_str(column)}]"
             row[:type] = type_str(column)
-          elsif row[:desc] == InitialDescription::DEFAULT_DESCRIPTION
+          elsif row[:desc].strip.length == 0
             new_desc = InitialDescription.for(@model, column.name)
-            if row[:desc] != new_desc
+            if new_desc && row[:desc] != new_desc
               puts "  M #{@model}##{column.name} description updated"
               row[:desc] = new_desc
             end
@@ -49,7 +49,7 @@ module Annotator
           @attrs << {
             :name => column.name,
             :type => type_str(column),
-            :desc => InitialDescription.for(@model, column.name)
+            :desc => InitialDescription.for(@model, column.name).to_s
           }
         end
       end
@@ -68,12 +68,12 @@ module Annotator
 
     protected
 
-    # Convert attributes lines into meaniningful array
+    # Convert attributes lines into meaningful array
     def parse
       @lines.each do |line|
         if m = line.match(R_ATTRIBUTE)
           @attrs << {:name => m[1].strip, :type => m[2].strip, :desc => m[4].strip}
-        elsif m = line.match(R_ATTRIBUTE_NEXT_LINE) 
+        elsif m = line.match(R_ATTRIBUTE_NEXT_LINE)
           @attrs[-1][:desc] += " #{m[1].strip}"
         end
       end
